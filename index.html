@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RegressLab is an interactive linear regression explorer for learning with data.">
+  <title>RegressLab — Interactive Regression Explorer</title>
+  <link rel="preconnect" href="https://cdn.plot.ly">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="RegressLab home">
+      <span class="brand-mark">r</span><span>Regress<span class="brand-accent">Lab</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a class="active" href="#home">Explorer</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#about">About</a>
+    </nav>
+    <button class="button button-small button-outline" id="resetTop" type="button">Reset data</button>
+  </header>
+
+  <main id="home" class="page-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> INTERACTIVE MACHINE LEARNING</div>
+        <h1>Make sense of <span>linear regression.</span></h1>
+        <p>Explore the relationship between two variables, fit a line, and see how a model turns data into predictions.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#workspace">Start exploring <span aria-hidden="true">↘</span></a>
+          <span class="tiny-note"><span class="tiny-check">✓</span> Runs in your browser</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-label">BEST-FIT MODEL <span>LIVE</span></div>
+        <svg viewBox="0 0 350 190" role="img">
+          <g stroke="#dbeafe" stroke-width="1">
+            <path d="M35 20V160M85 20V160M135 20V160M185 20V160M235 20V160M285 20V160"/>
+            <path d="M35 30H315M35 70H315M35 110H315M35 150H315"/>
+          </g>
+          <path d="M35 155 L315 35" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round"/>
+          <g fill="#60a5fa" stroke="#fff" stroke-width="2">
+            <circle cx="52" cy="142" r="6"/><circle cx="78" cy="125" r="6"/><circle cx="103" cy="132" r="6"/>
+            <circle cx="125" cy="108" r="6"/><circle cx="154" cy="104" r="6"/><circle cx="178" cy="88" r="6"/>
+            <circle cx="205" cy="97" r="6"/><circle cx="230" cy="66" r="6"/><circle cx="257" cy="58" r="6"/>
+            <circle cx="290" cy="44" r="6"/>
+          </g>
+          <path d="M35 170H320" stroke="#94a3b8" stroke-width="1.5"/><path d="M35 170V15" stroke="#94a3b8" stroke-width="1.5"/>
+        </svg>
+        <div class="art-equation">ŷ = b₀ + b₁x</div>
+        <div class="floating-chip">R² <strong>0.94</strong></div>
+      </div>
+    </section>
+
+    <section class="stats-row" aria-label="Model summary">
+      <article class="stat-card"><div class="stat-label">DATA POINTS</div><div class="stat-value" id="pointCount">12</div><div class="stat-foot">Observations in your dataset</div></article>
+      <article class="stat-card"><div class="stat-label">MODEL SLOPE</div><div class="stat-value" id="slopeStat">—</div><div class="stat-foot">Change in y per 1 unit of x</div></article>
+      <article class="stat-card"><div class="stat-label">R-SQUARED</div><div class="stat-value" id="r2Stat">—</div><div class="stat-foot">How well the line fits the data</div></article>
+      <article class="stat-card"><div class="stat-label">MODEL ERROR (RMSE)</div><div class="stat-value" id="rmseStat">—</div><div class="stat-foot">Typical prediction error</div></article>
+    </section>
+
+    <section class="workspace-grid" id="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-heading"><div><div class="section-kicker">CONTROL CENTER</div><h2>Model settings</h2></div><span class="panel-icon">⚙</span></div>
+        <label class="field-label" for="dataset">Choose a sample dataset</label>
+        <select id="dataset" class="select-input">
+          <option value="study">Study time &amp; score</option>
+          <option value="house">House size &amp; price</option>
+          <option value="temperature">Temperature &amp; ice cream sales</option>
+          <option value="noisy">Noisy random example</option>
+        </select>
+        <div class="field-row">
+          <div><label class="field-label" for="xLabel">X-axis label</label><input id="xLabel" class="text-input" value="Study hours" maxlength="30"></div>
+          <div><label class="field-label" for="yLabel">Y-axis label</label><input id="yLabel" class="text-input" value="Exam score" maxlength="30"></div>
+        </div>
+        <div class="control-divider"></div>
+        <div class="control-title">Display options</div>
+        <label class="switch-row"><span><strong>Regression line</strong><small>Show the best-fit line</small></span><input type="checkbox" id="showLine" checked><span class="switch"></span></label>
+        <label class="switch-row"><span><strong>Residuals</strong><small>Show errors from the line</small></span><input type="checkbox" id="showResiduals"><span class="switch"></span></label>
+        <label class="switch-row"><span><strong>Confidence band</strong><small>Approximate uncertainty band</small></span><input type="checkbox" id="showBand"><span class="switch"></span></label>
+        <div class="control-divider"></div>
+        <div class="control-title">Make a prediction</div>
+        <label class="field-label" for="predictX">Enter an X value <output id="predictValue">6</output></label>
+        <input id="predictX" type="range" min="0" max="12" step="0.5" value="6" class="range-input">
+        <div class="prediction-box"><div><span class="prediction-caption">PREDICTED Y</span><strong id="prediction">—</strong></div><span class="prediction-symbol">↗</span></div>
+        <button class="button button-primary button-full" id="addPoint" type="button">＋ Add predicted point to data</button>
+        <button class="button button-light button-full" id="randomize" type="button">Generate new sample</button>
+      </aside>
+
+      <section class="panel chart-panel">
+        <div class="chart-header">
+          <div><div class="section-kicker">VISUAL EXPLORER</div><h2>Relationship between variables</h2><p class="panel-subtitle">Select a dataset or edit its values to explore the fit.</p></div>
+          <span class="live-pill"><span></span> LIVE MODEL</span>
+        </div>
+        <div id="chart" class="chart" aria-label="Interactive regression scatter plot"></div>
+        <div class="chart-legend"><span><i class="legend-dot"></i> Observed data</span><span><i class="legend-line"></i> Best-fit line</span><span><i class="legend-residual"></i> Residual error</span></div>
+        <div class="equation-strip"><div><span class="equation-label">YOUR REGRESSION EQUATION</span><strong id="equation">ŷ = b₀ + b₁x</strong></div><div class="equation-note">Least-squares method</div></div>
+      </section>
+    </section>
+
+    <section class="panel data-panel">
+      <div class="data-heading"><div><div class="section-kicker">YOUR DATA</div><h2>Observation table</h2><p class="panel-subtitle">Edit X and Y values directly. The model updates automatically.</p></div><div class="data-actions"><button class="button button-light" id="addRow" type="button">＋ Add row</button><button class="button button-outline" id="downloadCsv" type="button">↓ Export CSV</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th id="xHead">X — Study hours</th><th id="yHead">Y — Exam score</th><th>Predicted Y</th><th>Residual</th><th></th></tr></thead><tbody id="dataRows"></tbody></table></div>
+      <div class="table-footer"><span id="tableSummary">12 observations</span><span>Tip: change a value to see the fit respond.</span></div>
+    </section>
+
+    <section class="learning-grid" id="how-it-works">
+      <div class="learning-copy"><div class="section-kicker">THE BASICS</div><h2>What is linear regression?</h2><p>Linear regression finds a straight line that best describes the relationship between an input variable (X) and an outcome (Y). It chooses the line by minimizing the sum of squared vertical errors.</p><div class="formula-card"><span>THE MODEL</span><strong>ŷ = b₀ + b₁x</strong><small>b₀ is the intercept · b₁ is the slope</small></div></div>
+      <div class="concept-cards"><article class="concept-card"><div class="concept-icon blue-icon">↗</div><h3>Slope</h3><p>How much the predicted outcome changes when X increases by one unit.</p></article><article class="concept-card"><div class="concept-icon violet-icon">◎</div><h3>R-squared</h3><p>The proportion of variation in Y explained by the fitted line. Closer to 1 usually means a better fit.</p></article><article class="concept-card"><div class="concept-icon amber-icon">↕</div><h3>Residual</h3><p>The difference between an observed value and the model's predicted value.</p></article></div>
+    </section>
+    <section class="about-banner" id="about"><div><div class="section-kicker">ABOUT THIS PROJECT</div><h2>Learn by experimenting.</h2><p>RegressLab is an educational demonstration of simple linear regression. It runs in your browser and does not upload your data.</p></div><div class="about-badge">Built for learning<br><strong>DATA · MODEL · INSIGHT</strong></div></section>
+  </main>
+  <footer class="footer"><a class="brand footer-brand" href="#home"><span class="brand-mark">r</span><span>Regress<span class="brand-accent">Lab</span></span></a><span>Interactive Linear Regression Explorer</span><a href="#home">Back to top ↑</a></footer>
+  <script src="script.js"></script>
+</body>
+</html>
